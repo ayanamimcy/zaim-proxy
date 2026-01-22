@@ -1,13 +1,33 @@
-import { DateTime, Str } from "chanfana";
+import { Str } from "chanfana";
 import type { Context } from "hono";
 import { z } from "zod";
 
-export type AppContext = Context<{ Bindings: Env }>;
+export type WorkerEnv = Env & {
+	ZAIM_CONSUMER_KEY: string;
+	ZAIM_CONSUMER_SECRET: string;
+	ZAIM_ACCESS_TOKEN: string;
+	ZAIM_ACCESS_TOKEN_SECRET: string;
+	API_KEY?: string;
+};
 
-export const Task = z.object({
-	name: Str({ example: "lorem" }),
-	slug: Str(),
-	description: Str({ required: false }),
-	completed: z.boolean().default(false),
-	due_date: DateTime(),
+export type AppContext = Context<{ Bindings: WorkerEnv }>;
+
+export const ApiKeyQuery = z.object({
+	key: Str({
+		required: false,
+		description: "Optional API key for simple protection",
+	}),
+});
+
+export const PaymentBody = z.object({
+	category_id: z.number().int().describe("Zaim category id"),
+	genre_id: z.number().int().describe("Zaim genre id"),
+	amount: z.number().int().describe("Payment amount"),
+	comment: Str({ required: false, description: "Note for the payment" }),
+	date: Str({
+		required: false,
+		description: "Date in YYYY-MM-DD",
+		example: "2026-01-22",
+	}),
+	from_account_id: z.number().int().describe("Source account id").optional(),
 });

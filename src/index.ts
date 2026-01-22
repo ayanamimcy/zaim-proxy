@@ -1,12 +1,13 @@
 import { fromHono } from "chanfana";
 import { Hono } from "hono";
-import { TaskCreate } from "./endpoints/taskCreate";
-import { TaskDelete } from "./endpoints/taskDelete";
-import { TaskFetch } from "./endpoints/taskFetch";
-import { TaskList } from "./endpoints/taskList";
+import { AccountList } from "./endpoints/accountList";
+import { CategoryList } from "./endpoints/categoryList";
+import { GenreList } from "./endpoints/genreList";
+import { PaymentCreate } from "./endpoints/paymentCreate";
+import type { WorkerEnv } from "./types";
 
 // Start a Hono app
-const app = new Hono<{ Bindings: Env }>();
+const app = new Hono<{ Bindings: WorkerEnv }>();
 
 // Setup OpenAPI registry
 const openapi = fromHono(app, {
@@ -14,10 +15,10 @@ const openapi = fromHono(app, {
 });
 
 // Register OpenAPI endpoints
-openapi.get("/api/tasks", TaskList);
-openapi.post("/api/tasks", TaskCreate);
-openapi.get("/api/tasks/:taskSlug", TaskFetch);
-openapi.delete("/api/tasks/:taskSlug", TaskDelete);
+openapi.post("/payment", PaymentCreate);
+openapi.get("/genre", GenreList);
+openapi.get("/category", CategoryList);
+openapi.get("/account", AccountList);
 
 // You may also register routes for non OpenAPI directly on Hono
 // app.get('/test', (c) => c.text('Hono!'))
