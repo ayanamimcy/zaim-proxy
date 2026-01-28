@@ -1,15 +1,12 @@
 import { OpenAPIRoute } from "chanfana";
 import { z } from "zod";
-import { ApiKeyQuery, AppContext } from "../types";
-import { isApiKeyValid, zaimRequest } from "../lib/zaimClient";
+import { AppContext } from "../types";
+import { getApiKeyFromRequest, isApiKeyValid, zaimRequest } from "../lib/zaimClient";
 
 export class GenreList extends OpenAPIRoute {
 	schema = {
 		tags: ["Zaim"],
 		summary: "Fetch genre list from Zaim",
-		request: {
-			query: ApiKeyQuery,
-		},
 		responses: {
 			"200": {
 				description: "Zaim API response",
@@ -31,12 +28,13 @@ export class GenreList extends OpenAPIRoute {
 	};
 
 	async handle(c: AppContext) {
-		const data = await this.getValidatedData<typeof this.schema>();
-		const { key } = data.query;
+		const apiKey = getApiKeyFromRequest(c.env, c.req.raw);
 
-		if (!isApiKeyValid(c.env, key)) {
+		if (!isApiKeyValid(c.env, apiKey)) {
 			return c.json({ error: "Invalid API key" }, 401);
 		}
+
+		await this.getValidatedData<typeof this.schema>();
 
 		let response: Response;
 		let json: unknown;

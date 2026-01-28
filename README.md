@@ -4,12 +4,12 @@ Cloudflare Worker that proxies to the Zaim API using OAuth1 (HMAC-SHA1), with op
 
 ## Endpoints
 
-- `POST /payment` — create a payment. Body: `{ category_id, genre_id, amount, comment?, date?, from_account_id? }`. Optional query `key` for API key.
+- `POST /payment` — create a payment. Body: `{ category_id, genre_id, amount, comment?, date?, from_account_id? }`. Optional API key header (default `x-api-key`, overridable via `API_KEY_HEADER`).
 - `GET /genre` — list genres.
 - `GET /category` — list categories.
 - `GET /account` — list accounts.
 
-All requests accept optional `?key=YOUR_API_KEY` when you set `API_KEY` in the worker environment.
+All requests accept an optional API key header when you set `API_KEY`; the header name defaults to `x-api-key` unless `API_KEY_HEADER` overrides it.
 
 ## Setup
 
@@ -24,6 +24,7 @@ npx wrangler secret put ZAIM_ACCESS_TOKEN
 npx wrangler secret put ZAIM_ACCESS_TOKEN_SECRET
 # optional
 npx wrangler secret put API_KEY
+npx wrangler secret put API_KEY_HEADER # optional header name override (default: x-api-key)
 ```
 
 ## Develop & Deploy

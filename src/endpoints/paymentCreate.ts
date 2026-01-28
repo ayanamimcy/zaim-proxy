@@ -1,14 +1,13 @@
 import { OpenAPIRoute } from "chanfana";
 import { z } from "zod";
-import { ApiKeyQuery, AppContext, PaymentBody } from "../types";
-import { isApiKeyValid, zaimRequest } from "../lib/zaimClient";
+import { AppContext, PaymentBody } from "../types";
+import { getApiKeyFromRequest, isApiKeyValid, zaimRequest } from "../lib/zaimClient";
 
 export class PaymentCreate extends OpenAPIRoute {
 	schema = {
 		tags: ["Zaim"],
 		summary: "Create a payment in Zaim",
 		request: {
-			query: ApiKeyQuery,
 			body: {
 				content: {
 					"application/json": {
@@ -38,12 +37,13 @@ export class PaymentCreate extends OpenAPIRoute {
 	};
 
 	async handle(c: AppContext) {
-		const data = await this.getValidatedData<typeof this.schema>();
-		const { key } = data.query;
+		const apiKey = getApiKeyFromRequest(c.env, c.req.raw);
 
-		if (!isApiKeyValid(c.env, key)) {
+		if (!isApiKeyValid(c.env, apiKey)) {
 			return c.json({ error: "Invalid API key" }, 401);
 		}
+
+		const data = await this.getValidatedData<typeof this.schema>();
 
 		const payload: Record<string, string | number> = {
 			mapping: 1,

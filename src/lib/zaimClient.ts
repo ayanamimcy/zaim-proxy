@@ -1,4 +1,4 @@
-import type { WorkerEnv } from "../types";
+import { DEFAULT_API_KEY_HEADER, type WorkerEnv } from "../types";
 
 type HttpMethod = "GET" | "POST";
 type ParamValue = string | number | null | undefined;
@@ -77,6 +77,17 @@ const filterParams = (params: Record<string, ParamValue>) =>
 		acc[key] = String(value);
 		return acc;
 	}, {});
+
+const normalizeHeaderName = (headerName?: string | null) =>
+	headerName?.trim().toLowerCase() ?? "";
+
+export const resolveApiKeyHeaderName = (env: WorkerEnv) =>
+	normalizeHeaderName(env.API_KEY_HEADER) || DEFAULT_API_KEY_HEADER;
+
+export const getApiKeyFromRequest = (env: WorkerEnv, request: Request) => {
+	const headerName = resolveApiKeyHeaderName(env);
+	return request.headers.get(headerName);
+};
 
 export const isApiKeyValid = (env: WorkerEnv, provided?: string | null) => {
 	const expected = env.API_KEY;
