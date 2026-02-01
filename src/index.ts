@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { AccountList } from "./endpoints/accountList";
 import { CategoryList } from "./endpoints/categoryList";
 import { GenreList } from "./endpoints/genreList";
+import { MoneyList } from "./endpoints/moneyList";
 import { PaymentCreate } from "./endpoints/paymentCreate";
 import type { WorkerEnv } from "./types";
 
@@ -19,6 +20,7 @@ openapi.post("/payment", PaymentCreate);
 openapi.get("/genre", GenreList);
 openapi.get("/category", CategoryList);
 openapi.get("/account", AccountList);
+openapi.get("/money", MoneyList);
 
 // You may also register routes for non OpenAPI directly on Hono
 // app.get('/test', (c) => c.text('Hono!'))
